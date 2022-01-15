@@ -1,12 +1,12 @@
 import { ExceptionFilter, Catch, ArgumentsHost } from '@nestjs/common';
-import { Request, Response } from 'express';
 import { Neo4jError } from 'neo4j-driver';
 
 @Catch(Neo4jError)
 export class Neo4jErrorFilter implements ExceptionFilter {
     catch(exception: Neo4jError, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
-        const response = ctx.getResponse<Response>();
+        const request = ctx.getRequest();
+        const response = ctx.getResponse();
 
         let statusCode = 500
         let error = 'Internal Server Error'
@@ -18,7 +18,7 @@ export class Neo4jErrorFilter implements ExceptionFilter {
             statusCode = 400
             error = 'Bad Request'
 
-            const [ _, property ] = exception.message.match(/`([a-z0-9]+)`/gi)
+            const [ _, property ] = exception.message.match(/`([a-z0-9]+)`/gi) || []
             message = [`${property.replace(/`/g, '')} already taken`]
         }
         // Neo.ClientError.Schema.ConstraintValidationFailed
@@ -27,16 +27,18 @@ export class Neo4jErrorFilter implements ExceptionFilter {
             statusCode = 400
             error = 'Bad Request'
 
-            const [ _, property ] = exception.message.match(/`([a-z0-9]+)`/gi)
+            const [ _, property ] = exception.message.match(/`([a-z0-9]+)`/gi) || []
             message = [`${property.replace(/`/g, '')} should not be empty`]
         }
 
         response
             .status(statusCode)
-            .json({
-                statusCode,
-                message,
-                error,
-            });
+            .send({
+            statusCode,
+            message,
+            error,
+            timestamp: new Date().toISOString(),
+            path: request.url,
+        });
     }
 }

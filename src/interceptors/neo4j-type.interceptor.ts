@@ -1,7 +1,7 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
-import { Observable, } from 'rxjs';
-import { map, } from 'rxjs/operators';
-import neo4j, {
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import {
     isDuration,
     isLocalTime,
     isTime,
@@ -10,9 +10,9 @@ import neo4j, {
     isLocalDateTime,
     isInt,
     isPoint,
+    Result,
  } from 'neo4j-driver'
-import { isNode, isRelationship } from 'neo4j-driver-core/lib/graph-types'
-import Result from 'neo4j-driver-core/lib/result'
+import { isNode, isRelationship } from 'neo4j-driver-core';
 
 const toNative = (value: any, showLabelsOrType?: boolean, showIdentity?: boolean): any => {
     if ( value === null || value === undefined ) return undefined

@@ -7,11 +7,15 @@
       "emitDecoratorMetadata": true,
       "experimentalDecorators": true,
       "allowSyntheticDefaultImports": true,
-      "target": "es6",
-      "lib": [ "es2019" ],
+      "target": "esnext",
+      "lib": [ "esnext" ],
       "sourceMap": false,
-      "outDir": "./dist",
+      "outDir": "lib",
       "incremental": true,
       "esModuleInterop": true,
-    }
+      "moduleResolution": "node",
+      "strict": true,
+    },
+    "exclude": ["node_modules", "lib", "dist", "src/test"],
+    "include": ["src"]
   }
